@@ -112,7 +112,7 @@ Cookie: ak_bmsc=67D66D434653CE35DDBD333B330BABAC172347DFDA5300008FF73060A3747713
         let cookieStrMatch = cookieStrRegexp.exec(text);
         if (cookieStrMatch) {
           let cookieStr = cookieStrMatch[1];
-          let cookieRegexp = /(.+?)=(.*?)[;|\n]/g;
+          let cookieRegexp = /(.+?)=(.*?)(;|\n|$)/g;
           let cookieMatch = cookieRegexp.exec(cookieStr);
           while (cookieMatch != null) {
             result.cookies.push(
