@@ -61,7 +61,7 @@
     </div>
     <script type="text/javascript">
       function ConvertToJson() {
-        let result = { request: "", headers: [], cookies: [] };
+        let result = { request: "", headers: [], cookies: [], bodyValues: [] };
         let text = document.getElementById("input").value;
         let resultString = "{\n";
 
@@ -71,27 +71,22 @@
 
         let cookieStrRegexp = /Cookie: (.*)\n/g;
         let cookieStrMatch = cookieStrRegexp.exec(text);
-		let resultCookiesString
-		if(cookieStrMatch != null){
-			let cookieStr = cookieStrMatch[1];
-			let cookieRegexp = /(.+?)=(.*?);/g;
-			let cookieMatch = cookieRegexp.exec(cookieStr);
-			while (cookieMatch != null) {
-			  result.cookies.push(
-				`"${cookieMatch[1].trim()}":"${cookieMatch[2].replaceAll(
-				  '"',
-				  '\\"'
-				)}"`
-			  );
-			  cookieMatch = cookieRegexp.exec(cookieStr);
-			}
-			resultCookiesString = `,\n"Cookies":\n{\n${result.cookies.join(
-			  ",\n"
-			)}\n}\n`;
-			text = text.replace(cookieStrMatch[0], "");
-		} else{
-			resultCookiesString=',\n"Cookies":\n{\n}\n';
-		}
+        let resultCookiesString
+        if(cookieStrMatch != null){
+          let cookieStr = cookieStrMatch[1];
+          let cookieRegexp = /(.+?)=(.*?);/g;
+          let cookieMatch = cookieRegexp.exec(cookieStr);
+          while (cookieMatch != null) {
+            result.cookies.push(`"${cookieMatch[1].trim()}":"${cookieMatch[2].replaceAll('"','\\"')}"`);
+            cookieMatch = cookieRegexp.exec(cookieStr);
+          }
+          resultCookiesString = `,\n"Cookies":\n{\n${result.cookies.join(
+            ",\n"
+          )}\n}\n`;
+          text = text.replace(cookieStrMatch[0], "");
+        } else{
+          resultCookiesString=',\n"Cookies":\n{\n}\n';
+        }
 		
         let headersStrRegexp = /HTTP\/1.1((.|\n)+?)\n\n/g;
         let headersStrMatch = headersStrRegexp.exec(text);
@@ -110,15 +105,27 @@
         resultString += resultCookiesString;
 
         let bodyRegexp = /\n\n+(.*)/g;
-        let bodymainMatch = bodyRegexp.exec(text);
-        if (mainMatch[1]) {
-          let val = bodymainMatch[1].trim();
+        let bodyMainMatch = bodyRegexp.exec(text);
+        if (bodyMainMatch[1]) {
+          let val = bodyMainMatch[1].trim();
+          
+          let bodyValueRegexp = /(.+?)=(.+?)(&|$)/g;
+          let bodyValueMatch = bodyValueRegexp.exec(val);
+          if (bodyValueMatch[1]){
+            while (bodyValueMatch != null) {
+              result.bodyValues.push(`"${bodyValueMatch[1].trim()}":"${bodyValueMatch[2].replaceAll('"','\\"')}"`);
+              bodyValueMatch = bodyValueRegexp.exec(val);
+            }
+            resultString += `,\n"BodyValues":\n{\n${result.bodyValues.join(",\n")}\n}\n`;
+          }
           resultString += `,\n"Body":\n${val[0] == "{" ? val : `"${val}"`}`;
         }
 
         resultString += "}";
         document.getElementById("output").value = resultString;
       }
+
+
       function Clear() {
         document.getElementById("input").value = "";
         document.getElementById("output").value = "";
