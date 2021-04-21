@@ -52,7 +52,7 @@
       </p>
 
       <p>
-        Сайт для сравнения JSON:
+        Сайт для сравнения JSON: 
         <a
           href="https://jsoneditoronline.org/#left=local.suqade&right=local.nibota"
           >jsoneditoronline.org</a
@@ -109,7 +109,7 @@
         if (bodyMainMatch[1]) {
           let val = bodyMainMatch[1].trim();
           
-          let bodyValueRegexp = /(.+?)=(.+?)(&|$)/g;
+          let bodyValueRegexp = /(.+?)=(.*?)(&|$)/g;
           let bodyValueMatch = bodyValueRegexp.exec(val);
           if (bodyValueMatch[1]){
             while (bodyValueMatch != null) {
